@@ -6,17 +6,33 @@ using namespace std;
 Color green = {173, 204,96,255};
 Color darkGreen = {43,51,24,255};
 
+int cellSize = 30;
+int cellCount = 25;
+
+class Food
+{
+    public:
+    //Can Access position.x, position.y    
+    Vector2 position = {5,6};
+
+    void Draw()
+    {
+        DrawRectangle(position.x * cellSize,position.y * cellSize,cellSize,cellSize,darkGreen);
+    }
+
+};
+
 int main () {
 
-    const int screenWidth = 750;
-    const int screenHeight = 750;
-
-    InitWindow(screenWidth, screenHeight, "Retro Snake Game");
+    InitWindow(cellSize*cellCount, cellSize*cellCount, "Retro Snake Game");
     SetTargetFPS(60);
+
+    Food food = Food();
 
     while (WindowShouldClose() == false){
         BeginDrawing();
         ClearBackground(green);
+        food.Draw();
 
         EndDrawing();
     }
