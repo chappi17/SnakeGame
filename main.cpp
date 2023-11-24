@@ -10,6 +10,7 @@ Color darkGreen = {43, 51, 24, 255};
 
 int cellSize = 30;
 int cellCount = 25;
+int offset = 75;
 
 // the condition of food location is on the snake body.
 bool ElementInDeque(Vector2 element, deque<Vector2> deque)
@@ -50,7 +51,7 @@ public:
         {
             float x = body[i].x;
             float y = body[i].y;
-            Rectangle segment = Rectangle{x * cellSize, y * cellSize, (float)cellSize, (float)cellSize};
+            Rectangle segment = Rectangle{offset+ x * cellSize, offset+ y * cellSize, (float)cellSize, (float)cellSize};
             DrawRectangleRounded(segment, 0.5f, 6, darkGreen);
         }
     }
@@ -104,7 +105,7 @@ public:
 
     void Draw()
     {
-        DrawTexture(texture, position.x * cellSize, position.y * cellSize, WHITE);
+        DrawTexture(texture, offset+ position.x * cellSize, offset+ position.y * cellSize, WHITE);
     }
 
     Vector2 GenerateRandomPos(deque<Vector2> snakeBody)
@@ -125,6 +126,23 @@ public:
     Snake snake = Snake();
     Food food = Food(snake.body);
     bool running = true;
+    int score =0;
+    Sound eatSound;
+    Sound wallSound;
+
+    Game()
+    {
+        InitAudioDevice();
+        eatSound =LoadSound("Sound/eat.mp3");
+        wallSound = LoadSound("Sound/wall.mp3"); 
+    }
+
+    ~Game()
+    {
+        UnloadSound(eatSound);
+        UnloadSound(wallSound);
+        CloseAudioDevice();
+    }
 
     void Draw()
     {
@@ -149,6 +167,8 @@ public:
         {
             food.position = food.GenerateRandomPos(snake.body);
             snake.addSegment = true;
+            score++;
+            PlaySound(eatSound);
         }
     }
 
@@ -169,6 +189,8 @@ public:
         snake.Reset();
         food.position = food.GenerateRandomPos(snake.body);
         running = false;
+        score =0;
+        PlaySound(wallSound);
     }
     
     void CheckCollisionWithTail()
@@ -185,8 +207,7 @@ public:
 };
 int main()
 {
-
-    InitWindow(cellSize * cellCount, cellSize * cellCount, "Retro Snake Game");
+    InitWindow(2*offset +cellSize * cellCount, 2*offset +cellSize * cellCount, "Retro Snake Game");
     SetTargetFPS(60);
 
     Game game = Game();
@@ -195,7 +216,7 @@ int main()
     {
         BeginDrawing();
 
-        if (eventTriggered(0.2))
+        if (eventTriggered(0.1))
         {
             game.Update();
         }
@@ -222,6 +243,9 @@ int main()
         }
 
         ClearBackground(green);
+        DrawRectangleLinesEx(Rectangle{(float)offset-5,(float)offset-5,(float)cellSize*cellCount+10,(float)cellSize*cellCount+10},5,darkGreen);
+        DrawText("Retro Snake",offset-5,20,40,darkGreen);
+        DrawText(TextFormat("%i",game.score),offset-5,offset+cellSize*cellCount+10,40,darkGreen);
         game.Draw();
         EndDrawing();
     }
