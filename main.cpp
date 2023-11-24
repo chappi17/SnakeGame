@@ -12,12 +12,32 @@ int cellCount = 25;
 class Food
 {
     public:
-    //Can Access position.x, position.y    
     Vector2 position = {5,6};
+    Texture2D texture;
+
+    Food()
+    {
+        Image image =LoadImage("Graphics/food.png");
+        texture = LoadTextureFromImage(image);
+        UnloadImage(image);
+        position = GenerateRandomPos();
+    }
+    ~Food()
+    {
+        UnloadTexture(texture);
+    }
+
+    //Can Access position.x, position.y    
 
     void Draw()
     {
-        DrawRectangle(position.x * cellSize,position.y * cellSize,cellSize,cellSize,darkGreen);
+        DrawTexture(texture,position.x*cellSize,position.y*cellSize,WHITE);
+    }
+    Vector2 GenerateRandomPos()
+    {
+        float x = GetRandomValue(0, cellCount -1);
+        float y = GetRandomValue(0, cellCount-1);
+        return Vector2{x,y};
     }
 
 };
